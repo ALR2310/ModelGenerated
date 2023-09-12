@@ -1,4 +1,5 @@
 Một phần mềm đơn giản giúp tạo ra các lớp Model đại diện cho các bảng và các trường trong cơ sở dữ liệu.
+
 Một số hình ảnh:
 
 ![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/bdfa0685-718a-415b-b6c1-29e0df17fa8a)
