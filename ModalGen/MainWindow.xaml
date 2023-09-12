@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ModalGen"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="ModalGen" Height="450" Width="400">
+        Icon="icon.png"
+        Title="ModelGen" Height="450" Width="400">
 
     <Grid Margin="5">
         <Grid.RowDefinitions>
