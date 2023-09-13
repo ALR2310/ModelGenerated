@@ -1,24 +1,19 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Data;
-using MessageBox = System.Windows.MessageBox;
 using System.Data.Common;
 using CheckBox = System.Windows.Controls.CheckBox;
+using MySql.Data.MySqlClient;
+using ModelGen.SqlAvanced;
+using ModelGen.Model;
+using System.Data.SQLite;
 
 namespace ModalGen
 {
@@ -29,12 +24,21 @@ namespace ModalGen
     {
         //private StringBuilder logBuilder = new StringBuilder();
         private Span logBuilder = new Span();
+
+        //sql server = Data Source=.\sqlexpress;Initial Catalog=QuanLyRaVaoCty;Integrated Security=True
+        //mysql = Server=localhost;Database=quanlysinhvien;User=root;Password=123456;
+        //sqlite = Data Source=D:\LeThanhAn\SQLite\QLCT;Version=3;
         public MainWindow()
         {
             InitializeComponent();
 
+            DataStore.Instance.OnDataChanged += (data) =>
+            {
+                tbConnectString.Text = data;
+            };
         }
 
+        //Xử lý chọn đường dẫn file sẽ xuất hiện
         private void btnSelectFilePath_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
@@ -57,12 +61,7 @@ namespace ModalGen
             tbLogs.Inlines.Add(logBuilder);
         }
 
-
-
-
-
-
-
+        //Xửa lý kết nối đến sql và lấy ra tên các bảng
         private void tbConnectString_TextChanged(object sender, TextChangedEventArgs e)
         {
             string selectedDatabase = ((ComboBoxItem)cmbDatabaseType.SelectedItem)?.Content.ToString();
@@ -82,7 +81,6 @@ namespace ModalGen
 
                         // Truy vấn để lấy danh sách các bảng trong cơ sở dữ liệu
                         DataTable schema = connection.GetSchema("Tables");
-
                         foreach (DataRow row in schema.Rows)
                         {
                             string tableName = row["TABLE_NAME"].ToString();
@@ -98,7 +96,6 @@ namespace ModalGen
                                 tableCheckBoxes.Children.Add(checkBox);
                             }
                         }
-
                         logBuilder.Inlines.Add(new Run($"Lấy thông tin các bảng thành công\n") { Foreground = Brushes.Green });
                     }
                     else
@@ -111,27 +108,32 @@ namespace ModalGen
             {
                 logBuilder.Inlines.Add(new Run($"Lỗi kết nối: {ex.Message}\n") { Foreground = Brushes.Red });
             }
-
             tbLogs.Inlines.Add(logBuilder);
         }
 
+        //Các loại kết nối đến sql
         private DbConnection GetDatabaseConnection(string selectedDatabase, string connectionString)
         {
             switch (selectedDatabase)
             {
                 case "SQL Server":
                     return new SqlConnection(connectionString);
+                case "MySQL":
+                    return new MySqlConnection(connectionString);
                 // Thêm các case cho các loại cơ sở dữ liệu khác ở đây.
                 default:
                     throw new ArgumentException($"Loại cơ sở dữ liệu không được hỗ trợ: {selectedDatabase}");
             }
         }
 
+        //Clear nhật kí
         private void btnClearLogs_Click(object sender, RoutedEventArgs e)
         {
-            tbLogs.Text = string.Empty;
+            logBuilder.Inlines.Clear();
+            tbLogs.Inlines.Add(logBuilder);
         }
 
+        //Thực thi chức năng
         private void btnExecute_Click(object sender, RoutedEventArgs e)
         {
             // Chuỗi kết nối đến SQL Server
@@ -268,5 +270,140 @@ namespace ModalGen
                     return "object";
             }
         }
+
+        //Mở cửa sổ sql string
+        private void btnOpenSQLConnect_Click(object sender, RoutedEventArgs e)
+        {
+            SQLServer db = new SQLServer();
+            db.ShowDialog();
+        }
+
+        //Kiểm tra kết nối
+        private void btnCheckConnect_Click(object sender, RoutedEventArgs e)
+        {
+            ClearTableCheckBoxes();
+
+            string selectedDatabase = ((ComboBoxItem)cmbDatabaseType.SelectedItem)?.Content.ToString();
+            string connectionString = tbConnectString.Text;
+
+            logBuilder.Inlines.Add(new Run($"Chuỗi Kết Nối Loại: {selectedDatabase}\n") { Foreground = Brushes.Black });
+
+            bool isConnected = TestDatabaseConnection(selectedDatabase, connectionString);
+
+            if (isConnected)
+            {
+                DataTable schema = GetDatabaseTables(selectedDatabase, connectionString);
+                foreach (DataRow row in schema.Rows)
+                {
+                    string tableName = row["TABLE_NAME"].ToString();
+                    if (tableName != "sysdiagrams")
+                    {
+                        CheckBox checkBox = new CheckBox
+                        {
+                            Content = tableName,
+                            Tag = tableName, // Sử dụng Tag để lưu tên bảng
+                            IsChecked = true // Chọn mặc định
+                        };
+                        tableCheckBoxes.Children.Add(checkBox);
+                    }
+                }
+
+                logBuilder.Inlines.Add(new Run($"Kết nối đến {selectedDatabase} thành công\n") { Foreground = Brushes.Green });
+                logBuilder.Inlines.Add(new Run($"Lấy thông tin các bảng thành công\n") { Foreground = Brushes.Green });
+            }
+            else
+            {
+                logBuilder.Inlines.Add(new Run($"Kết nối đến {selectedDatabase} thất bại\n") { Foreground = Brushes.Red });
+            }
+
+            tbLogs.Inlines.Add(logBuilder);
+        }
+
+        private bool TestDatabaseConnection(string databaseType, string connectionString)
+        {
+            try
+            {
+                switch (databaseType)
+                {
+                    case "SQL Server":
+                        using (SqlConnection connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            return connection.State == ConnectionState.Open;
+                        }
+                    case "MySQL":
+                        using (MySqlConnection connection = new MySqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            return connection.State == ConnectionState.Open;
+                        }
+                    case "SQLite":
+                        using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                        {
+                            connection.Open();
+                            return connection.State == ConnectionState.Open;
+                        }
+                    default:
+                        return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private DataTable GetDatabaseTables(string databaseType, string connectionString)
+        {
+            DataTable schema = new DataTable();
+            try
+            {
+                switch (databaseType)
+                {
+                    case "SQL Server":
+                        using (SqlConnection connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                schema = connection.GetSchema("Tables");
+                            }
+                        }
+                        break;
+                    case "MySQL":
+                        using (MySqlConnection connection = new MySqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                schema = connection.GetSchema("Tables");
+                            }
+                        }
+                        break;
+                    case "SQLite":
+                        using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                        {
+                            connection.Open();
+                            if (connection.State == ConnectionState.Open)
+                            {
+                                schema = connection.GetSchema("Tables");
+                            }
+                        }
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                // Handle exceptions
+            }
+            return schema;
+        }
+
+
+        private void ClearTableCheckBoxes()
+        {
+            tableCheckBoxes.Children.Clear();
+        }
+
     }
 }

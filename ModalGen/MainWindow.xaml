@@ -24,7 +24,7 @@
             <ComboBox x:Name="cmbDatabaseType" Margin="10 10 5 10">
                 <ComboBoxItem Content="SQL Server" IsSelected="True"/>
                 <ComboBoxItem Content="MySQL"/>
-                <ComboBoxItem Content="Sql Lite"/>
+                <ComboBoxItem Content="SQLite"/>
                 <ComboBoxItem Content="PostgreSQL"/>
                 <ComboBoxItem Content="Oracle Database"/>
                 <ComboBoxItem Content="IBM Db2"/>
@@ -32,24 +32,37 @@
                 <ComboBoxItem Content="Sybase ASE"/>
             </ComboBox>
 
-            <TextBox Grid.Column="1" x:Name="tbConnectString" Margin="5 10 10 10" TextChanged="tbConnectString_TextChanged" />
-            <TextBlock Grid.Column="1" VerticalAlignment="Center" IsHitTestVisible="False" Text="Nhập chuỗi kết nối đến Database của bạn..." Margin="12 10 10 10" Foreground="Gray">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=tbConnectString}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" x:Name="tbConnectString" Margin="5 10 5 10"  />
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" IsHitTestVisible="False" Text="Nhập chuỗi kết nối đến Database của bạn..." Margin="12 10 10 10" Foreground="Gray">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=tbConnectString}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <Button x:Name="btnOpenSQLConnect" Click="btnOpenSQLConnect_Click" Grid.Column="1" Width="20" VerticalAlignment="Center" Margin="5 10 10 10">
+                    <Image Source="\images\icon1.png"/>
+                </Button>
+            </Grid>
+
+
         </Grid>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="tbFilePath" Margin="10 10 5 10"/>
@@ -67,6 +80,8 @@
             </TextBlock>
 
             <Button Grid.Column="1" Margin="5 10 10 10" Padding="5 2 5 2" x:Name="btnSelectFilePath" Content="Chọn đường dẫn" Click="btnSelectFilePath_Click"/>
+
+            <Button Name="btnCheckConnect" Grid.Column="2" Content="Kiểm Tra Kết Nối" Margin="5 10 10 10" Click="btnCheckConnect_Click"/>
         </Grid>
 
         <Grid Grid.Row="2">
