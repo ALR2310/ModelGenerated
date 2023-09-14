@@ -102,7 +102,7 @@
 
             <Border BorderBrush="DarkGray" BorderThickness="1" Margin="10 10 5 10">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden" >
-                    <TextBlock x:Name="tbLogs" />
+                    <TextBlock x:Name="tbLogs" Padding="2" />
                 </ScrollViewer>
             </Border>
 

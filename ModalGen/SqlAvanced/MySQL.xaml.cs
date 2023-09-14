@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,11 +17,11 @@ using System.Windows.Shapes;
 namespace ModelGen.SqlAvanced
 {
     /// <summary>
-    /// Interaction logic for SQLServer.xaml
+    /// Interaction logic for MySQL.xaml
     /// </summary>
-    public partial class SQLServer : Window
+    public partial class MySQL : Window
     {
-        public SQLServer()
+        public MySQL()
         {
             InitializeComponent();
 
@@ -29,7 +30,7 @@ namespace ModelGen.SqlAvanced
             tbDataBase.TextChanged += TextBox_TextChanged;
             tbUserID.TextChanged += TextBox_TextChanged;
             tbPassword.TextChanged += TextBox_TextChanged;
-            tbTimeout.TextChanged += TextBox_TextChanged;
+            tbTcpPort.TextChanged += TextBox_TextChanged;
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -39,23 +40,14 @@ namespace ModelGen.SqlAvanced
             string database = tbDataBase.Text;
             string userId = tbUserID.Text;
             string password = tbPassword.Text;
-            string timeout = tbTimeout.Text;
+            string port = tbTcpPort.Text;
 
             // Tạo chuỗi kết nối SQL
-            string sqlConnectString;
+            string sqlConnectString = $"Server={dataSource};Database={database};Uid={userId};Pwd={password};";
 
-            if (string.IsNullOrEmpty(userId) && string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(port))
             {
-                sqlConnectString = $"Data Source={dataSource};Initial Catalog={database};Integrated Security=True;";
-            }
-            else
-            {
-                sqlConnectString = $"Data Source={dataSource};Initial Catalog={database};User ID={userId};Password={password};";
-            }
-
-            if (!string.IsNullOrEmpty(timeout))
-            {
-                sqlConnectString += $"Connection Timeout={timeout};";
+                sqlConnectString += $"Port={port};";
             }
 
             if (cbEncryptTrue.IsSelected)
@@ -67,7 +59,6 @@ namespace ModelGen.SqlAvanced
             SQlConnectString.Text = sqlConnectString;
         }
 
-
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -78,5 +69,7 @@ namespace ModelGen.SqlAvanced
             GetConnectString.Instance.ConnectString = SQlConnectString.Text;
             this.Close();
         }
+
+
     }
 }
