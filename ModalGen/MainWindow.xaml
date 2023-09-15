@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ModalGen"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="ModelGen" Height="450" Width="400">
+        Title="ModelGen" Height="500" Width="420">
 
     <Grid Margin="5">
         <Grid.RowDefinitions>
@@ -38,7 +38,7 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox Grid.Column="0" x:Name="tbConnectString" Margin="5 10 5 10"  />
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" IsHitTestVisible="False" Text="Nhập chuỗi kết nối đến Database của bạn..." Margin="12 10 10 10" Foreground="Gray">
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" IsHitTestVisible="False" Text="Nhập chuỗi kết nối đến Database của bạn*" Margin="12 10 10 10" Foreground="Gray">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -55,7 +55,6 @@
                     <Image Source="\images\icon1.png"/>
                 </Button>
             </Grid>
-
 
         </Grid>
 
@@ -79,19 +78,36 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <Button Grid.Column="1" Margin="5 10 10 10" Padding="5 2 5 2" x:Name="btnSelectFilePath" Content="Chọn đường dẫn" Click="btnSelectFilePath_Click"/>
+            <Button Grid.Column="1" Margin="5 10 10 10" Padding="5 2 5 2" x:Name="btnSelectFilePath" Content="Chọn" Click="btnSelectFilePath_Click"/>
 
             <Button Name="btnCheckConnect" Grid.Column="2" Content="Kiểm Tra Kết Nối" Margin="5 10 10 10" Click="btnCheckConnect_Click"/>
         </Grid>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="namespace:" Margin="10 10 5 10"/>
-            <TextBox x:Name="tbNamespace" Grid.Column="1" Margin="5 10 10 10"/>
+
+            <TextBox x:Name="tbNamespace" Margin="10 10 5 10" Height="22" />
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" IsHitTestVisible="False" Text="Namespace" Margin="12 10 10 10" Foreground="Gray">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=tbNamespace}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+
+            <StackPanel Grid.Column="1" Margin="10" VerticalAlignment="Center" Orientation="Horizontal">
+                <CheckBox x:Name="cboxClassDAl" Content="Tạo lớp DAL" Margin="0 0 5 0" IsChecked="True"/>
+                <CheckBox x:Name="cboxClassModelManager" Content="Tạo các lớp Model Manager" IsChecked="True" />
+            </StackPanel>
         </Grid>
 
         <Grid Grid.Row="3">

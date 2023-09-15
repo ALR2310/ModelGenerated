@@ -37,8 +37,8 @@ namespace ModalGen
                 tbConnectString.Text = data;
             };
 
-            //tbConnectString.Text = @"Data Source=.\sqlexpress;Initial Catalog=QuanLyRaVaoCty;Integrated Security=True";
-            //tbFilePath.Text = @"C:\Users\ALRIP\Desktop\TEST";
+            tbConnectString.Text = @"Data Source=.\sqlexpress;Initial Catalog=school;Integrated Security=True";
+            tbFilePath.Text = @"C:\Users\ALRIP\Desktop\TEST";
         }
 
         //Xử lý chọn đường dẫn file sẽ xuất hiện
@@ -156,43 +156,62 @@ namespace ModalGen
 
             try
             {
+                DatabaseManager dbManager = new DatabaseManager((string)((ComboBoxItem)cmbDatabaseType.SelectedItem)?.Content, connectionString);
+
+                if (cboxClassDAl.IsChecked == true)
+                {
+                    //Tạo lớp DAL với cấu trúc của từng database
+                    switch ((string)((ComboBoxItem)cmbDatabaseType.SelectedItem)?.Content)
+                    {
+                        case "SQL Server":
+                            dbManager.GenerateClassDAL("SQL Server", connectionString, outputPath, namespaces);
+                            break;
+                        case "MySQL":
+                            dbManager.GenerateClassDAL("MySQL", connectionString, outputPath, namespaces);
+                            break;
+                        case "SQLite":
+                            dbManager.GenerateClassDAL("SQLite", connectionString, outputPath, namespaces);
+                            break;
+                        default:
+                            logBuilder.Inlines.Add(new Run($"Tạo tệp thất bại. chưa hỗ trợ loại SQL này\n") { Foreground = Brushes.Red });
+                            break;
+                    }
+                    string managerFullFilePath = System.IO.Path.Combine(outputPath + "\\DAL", "DataAccessLayer.cs");
+                    logBuilder.Inlines.Add(new Run($"Tạo Tệp DataAccessLayer.cs thành công\n") { Foreground = Brushes.Green });
+                    logBuilder.Inlines.Add(new Run($"Đã lưu tệp tại: {managerFullFilePath}\n") { Foreground = Brushes.Black });
+                }
+
                 foreach (CheckBox checkBox in tableCheckBoxes.Children)
                 {
                     if (checkBox.IsChecked == true)
                     {
                         string selectedTable = checkBox.Tag.ToString();
-                        DatabaseManager dbManager = new DatabaseManager((string)((ComboBoxItem)cmbDatabaseType.SelectedItem)?.Content, connectionString);
                         List<string> columns = dbManager.GetTableColumns(selectedTable);
 
-                        StringBuilder classCode = new StringBuilder();
-                        classCode.AppendLine("using System;");
-                        classCode.AppendLine("using System.Collections.Generic;");
-                        classCode.AppendLine("using System.Linq;");
-                        classCode.AppendLine("using System.Text;");
-                        classCode.AppendLine("using System.Threading.Tasks;");
-                        classCode.AppendLine();
-                        classCode.AppendLine($"namespace {namespaces}");
-                        classCode.AppendLine("{");
-                        classCode.AppendLine($"    public class {selectedTable}");
-                        classCode.AppendLine("    {");
+                        // Tạo lớp Model
+                        dbManager.GeneratedClassModel(selectedTable, columns, outputPath, namespaces);
 
-                        foreach (var column in columns)
+                        // Tạo lớp Manager cho các model
+                        if (cboxClassModelManager.IsChecked == true)
                         {
-                            classCode.AppendLine($"        public {column} {{ get; set; }}");
+                            dbManager.GenerateClassManager(selectedTable, columns, outputPath, namespaces);
+
+                            string managerFileName = $"{selectedTable}Manager.cs";
+                            string managerFullFilePath = System.IO.Path.Combine(outputPath + "\\DAL", managerFileName);
+                            logBuilder.Inlines.Add(new Run($"Tạo Tệp {selectedTable}Manager.cs thành công\n") { Foreground = Brushes.Green });
+                            logBuilder.Inlines.Add(new Run($"Đã lưu tệp tại: {managerFullFilePath}\n") { Foreground = Brushes.Black });
                         }
 
-                        classCode.AppendLine("    }");
-                        classCode.Append("}");
-
                         string outputFileName = $"{selectedTable}.cs";
-                        string outputFileFullPath = System.IO.Path.Combine(outputPath, outputFileName);
+                        string outputFileFullPath = System.IO.Path.Combine(outputPath + "\\Model", outputFileName);
 
-                        System.IO.File.WriteAllText(outputFileFullPath, classCode.ToString());
                         logBuilder.Inlines.Add(new Run($"Tạo Tệp {selectedTable}.cs thành công\n") { Foreground = Brushes.Green });
                         logBuilder.Inlines.Add(new Run($"Đã lưu tệp tại: {outputFileFullPath}\n") { Foreground = Brushes.Black });
                         tbLogs.Inlines.Add(logBuilder);
                     }
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -202,6 +221,7 @@ namespace ModalGen
             }
         }
 
+        //Xoá danh sách bảng trong checkbox
         private void ClearTableCheckBoxes()
         {
             tableCheckBoxes.Children.Clear();

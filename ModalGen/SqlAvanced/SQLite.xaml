@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ModelGen.SqlAvanced"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="SQLite" Height="200" Width="300">
+        Title="SQLite Connection String" Height="200" Width="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -21,7 +21,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
             <TextBox Grid.Column="0" x:Name="tbDataSource" Margin="10 10 3 10" TextChanged="TextBox_TextChanged" />
             <TextBlock Grid.Column="0" VerticalAlignment="Center" IsHitTestVisible="False" Text="Data Source" Margin="12 10 10 10" Foreground="Gray">
                 <TextBlock.Style>
