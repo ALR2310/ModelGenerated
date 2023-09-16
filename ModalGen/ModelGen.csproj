@@ -162,7 +162,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\DataAccessLayer.cs" />
     <Compile Include="Model\DatabaseManager.cs" />
     <Compile Include="Model\GetConnectString.cs" />
     <Compile Include="SqlAvanced\MySQL.xaml.cs">

@@ -14,6 +14,7 @@ using MySql.Data.MySqlClient;
 using ModelGen.SqlAvanced;
 using ModelGen.Model;
 using System.Data.SQLite;
+using MessageBox = System.Windows.MessageBox;
 
 namespace ModalGen
 {
@@ -89,6 +90,9 @@ namespace ModalGen
                 case "SQLite":
                     SQLite sqlite = new SQLite();
                     sqlite.ShowDialog();
+                    break;
+                default:
+                    MessageBox.Show("Chưa hỗ trợ loại Sql này");
                     break;
             }
         }

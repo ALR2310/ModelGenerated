@@ -279,63 +279,67 @@ namespace ModelGen.Model
             System.IO.File.WriteAllText(DALFileFullPath, classCode.ToString());
         }
 
+        //Tạo tệp class DAL
         public void GenerateClassDAL(string typleDB, string connectString, string outputPath, string namespaces)
         {
             string symbol = "{";
             StringBuilder cls = new StringBuilder();
 
-            if (typleDB == "SQL Server")
-            {
-                cls.Clear();
-                cls.AppendLine("using System;");
-                cls.AppendLine("using System.Collections.Generic;");
-                cls.AppendLine("using System.Data.SqlClient;");
-                cls.AppendLine("using System.Data;");
-                cls.AppendLine("using System.Linq;");
-                cls.AppendLine();
-                cls.AppendLine($"namespace {namespaces} {symbol}");
-                cls.AppendLine($"    public class DataAccessLayer {symbol} string ConnectString = @\"{connectString}\";");
-                cls.AppendLine();
-                cls.AppendLine("        public List<T> ExecuteTypeList<T>(string query, object parameters = null) where T : new() {");
-                cls.AppendLine("            try { using (SqlConnection connection = new SqlConnection(ConnectString)) {connection.Open();");
-                cls.AppendLine("                using (SqlCommand command = new SqlCommand(query, connection)) {");
-                cls.AppendLine("                    if (parameters != null) {var properties = parameters.GetType().GetProperties();");
-                cls.AppendLine("                        foreach (var property in properties) {string paramName = \"@\" + property.Name;");
-                cls.AppendLine("                            var paramValue = property.GetValue(parameters, null);");
-                cls.AppendLine("                            command.Parameters.AddWithValue(paramName, paramValue ?? DBNull.Value);}}");
-                cls.AppendLine("                    SqlDataAdapter adapter = new SqlDataAdapter(command);");
-                cls.AppendLine("                    DataTable dataTable = new DataTable();adapter.Fill(dataTable);");
-                cls.AppendLine("                    List<T> resultList = new List<T>();");
-                cls.AppendLine("                    foreach (DataRow row in dataTable.Rows) {T obj = new T();");
-                cls.AppendLine("                        foreach (DataColumn col in dataTable.Columns) {var property = typeof(T).GetProperty(col.ColumnName);");
-                cls.AppendLine("                            if (property != null) {object value = row[col];");
-                cls.AppendLine("                                if (value != DBNull.Value) {property.SetValue(obj, value);}}}resultList.Add(obj);}");
-                cls.AppendLine("                    return resultList;}}}catch (Exception ex) { throw ex; } }");
-                cls.AppendLine();
-                cls.AppendLine("        public int ExecuteNonQuery(string query, object parameters = null) {");
-                cls.AppendLine("            try { using (SqlConnection connection = new SqlConnection(ConnectString)) {connection.Open();");
-                cls.AppendLine("                SqlCommand cmd = new SqlCommand(query, connection);");
-                cls.AppendLine("                if (parameters != null) {var properties = parameters.GetType().GetProperties();");
-                cls.AppendLine("                    foreach (var property in properties) {string paramName = \"@\" + property.Name;");
-                cls.AppendLine("                        var paramValue = property.GetValue(parameters, null);");
-                cls.AppendLine("                        cmd.Parameters.AddWithValue(paramName, paramValue ?? DBNull.Value);}}");
-                cls.AppendLine("                    return cmd.ExecuteNonQuery();}}catch (Exception ex){throw ex;}}");
-                cls.AppendLine();
-                cls.AppendLine("        public T ExecuteScalar<T>(string query, object parameters = null){");
-                cls.AppendLine("            try{ using (SqlConnection connection = new SqlConnection(ConnectString)){ connection.Open();");
-                cls.AppendLine("                SqlCommand cmd = new SqlCommand(query, connection);");
-                cls.AppendLine("                if (parameters != null){ var properties = parameters.GetType().GetProperties();");
-                cls.AppendLine("                    foreach (var property in properties){ string paramName = \"@\" + property.Name;");
-                cls.AppendLine("                        var paramValue = property.GetValue(parameters, null);");
-                cls.AppendLine("                        cmd.Parameters.AddWithValue(paramName, paramValue ?? DBNull.Value);}}");
-                cls.AppendLine("                    object result = cmd.ExecuteScalar();");
-                cls.AppendLine("                    if (result != null && result != DBNull.Value){return (T)Convert.ChangeType(result, typeof(T));}");
-                cls.AppendLine("                    else{return default(T);}}}catch (Exception ex){throw ex;}}}}");
-            }
-            else if (typleDB == "MySQL")
-            {
-                cls.Clear();
-            }
+            string SqlConnection = "SqlConnection", SqlDataAdapter = "SqlDataAdapter", SqlCommand = "SqlCommand";
+
+            if (typleDB == "MySQL") { SqlConnection = "MySqlConnection"; SqlDataAdapter = "MySqlDataAdapter"; SqlCommand = "MySqlCommand"; }
+            else if (typleDB == "SQLite") { SqlConnection = "SQLiteConnection"; SqlDataAdapter = "MySqlDataAdapter"; SqlCommand = "SQLiteCommand"; }
+
+            cls.AppendLine("using System;");
+            cls.AppendLine("using System.Collections.Generic;");
+            cls.AppendLine("using System.Data.SqlClient;");
+            cls.AppendLine("using System.Data;");
+            cls.AppendLine("using System.Linq;");
+            cls.AppendLine();
+            cls.AppendLine($"namespace {namespaces} {symbol}");
+            cls.AppendLine($"    public class DataAccessLayer {symbol} string ConnectString = @\"{connectString}\";");
+            cls.AppendLine();
+            cls.AppendLine("        public List<T> ExecuteTypeList<T>(string query, object parameters = null) where T : new() {");
+            cls.AppendLine("            try { ");
+            cls.AppendLine($"                using ({SqlConnection} connection = new {SqlConnection}(ConnectString))");
+            cls.AppendLine("                {connection.Open();");
+            cls.AppendLine($"                using ({SqlCommand} command = new {SqlCommand}(query, connection))");
+            cls.AppendLine("                    { if (parameters != null) {var properties = parameters.GetType().GetProperties();");
+            cls.AppendLine("                        foreach (var property in properties) {string paramName = \"@\" + property.Name;");
+            cls.AppendLine("                            var paramValue = property.GetValue(parameters, null);");
+            cls.AppendLine("                            command.Parameters.AddWithValue(paramName, paramValue ?? DBNull.Value);}}");
+            cls.AppendLine($"                    {SqlDataAdapter} adapter = new {SqlDataAdapter}(command);");
+            cls.AppendLine("                    DataTable dataTable = new DataTable();adapter.Fill(dataTable);");
+            cls.AppendLine("                    List<T> resultList = new List<T>();");
+            cls.AppendLine("                    foreach (DataRow row in dataTable.Rows) {T obj = new T();");
+            cls.AppendLine("                        foreach (DataColumn col in dataTable.Columns) {var property = typeof(T).GetProperty(col.ColumnName);");
+            cls.AppendLine("                            if (property != null) {object value = row[col];");
+            cls.AppendLine("                                if (value != DBNull.Value) {property.SetValue(obj, value);}}}resultList.Add(obj);}");
+            cls.AppendLine("                    return resultList;}}}catch (Exception ex) { throw ex; } }");
+            cls.AppendLine();
+            cls.AppendLine("        public int ExecuteNonQuery(string query, object parameters = null) {");
+            cls.AppendLine("            try { ");
+            cls.AppendLine($"                using ({SqlConnection} connection = new SqlConnection({SqlConnection})) ");
+            cls.AppendLine("                { connection.Open(); ");
+            cls.AppendLine($"                {SqlCommand} cmd = new {SqlCommand}(query, connection);");
+            cls.AppendLine("                if (parameters != null) {var properties = parameters.GetType().GetProperties();");
+            cls.AppendLine("                    foreach (var property in properties) {string paramName = \"@\" + property.Name;");
+            cls.AppendLine("                        var paramValue = property.GetValue(parameters, null);");
+            cls.AppendLine("                        cmd.Parameters.AddWithValue(paramName, paramValue ?? DBNull.Value);}}");
+            cls.AppendLine("                    return cmd.ExecuteNonQuery();}}catch (Exception ex){throw ex;}}");
+            cls.AppendLine();
+            cls.AppendLine("        public T ExecuteScalar<T>(string query, object parameters = null){");
+            cls.AppendLine("            try{ ");
+            cls.AppendLine($"                using ({SqlConnection} connection = new {SqlConnection}(ConnectString))");
+            cls.AppendLine("                { connection.Open();");
+            cls.AppendLine($"                {SqlCommand} cmd = new {SqlCommand}(query, connection);");
+            cls.AppendLine("                if (parameters != null){ var properties = parameters.GetType().GetProperties();");
+            cls.AppendLine("                    foreach (var property in properties){ string paramName = \"@\" + property.Name;");
+            cls.AppendLine("                        var paramValue = property.GetValue(parameters, null);");
+            cls.AppendLine("                        cmd.Parameters.AddWithValue(paramName, paramValue ?? DBNull.Value);}}");
+            cls.AppendLine("                    object result = cmd.ExecuteScalar();");
+            cls.AppendLine("                    if (result != null && result != DBNull.Value){return (T)Convert.ChangeType(result, typeof(T));}");
+            cls.AppendLine("                    else{return default(T);}}}catch (Exception ex){throw ex;}}}}");
 
             string DALFolderPath = System.IO.Path.Combine(outputPath, "DAL");
             if (!System.IO.Directory.Exists(DALFolderPath))
