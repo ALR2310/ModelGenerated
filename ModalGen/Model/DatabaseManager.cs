@@ -284,15 +284,16 @@ namespace ModelGen.Model
         }
 
         //Tạo tệp class DAL
-        public void GenerateClassDAL(string typleDB, string connectString, string outputPath, string namespaces)
+        public void GenerateClassDAL(string typeDb, string connectString, string outputPath, string namespaces)
         {
             string symbol = "{";
             StringBuilder cls = new StringBuilder();
 
             string SqlConnection = "SqlConnection", SqlDataAdapter = "SqlDataAdapter", SqlCommand = "SqlCommand";
 
-            if (typleDB == "MySQL") { SqlConnection = "MySqlConnection"; SqlDataAdapter = "MySqlDataAdapter"; SqlCommand = "MySqlCommand"; }
-            else if (typleDB == "SQLite") { SqlConnection = "SQLiteConnection"; SqlDataAdapter = "MySqlDataAdapter"; SqlCommand = "SQLiteCommand"; }
+            if (typeDb == "MySQL") { SqlConnection = "MySqlConnection"; SqlDataAdapter = "MySqlDataAdapter"; SqlCommand = "MySqlCommand"; }
+            else if (typeDb == "SQLite") { SqlConnection = "SQLiteConnection"; SqlDataAdapter = "MySqlDataAdapter"; SqlCommand = "SQLiteCommand"; }
+            else if (typeDb == "PostgreSQL") { SqlConnection = "NpgsqlConnection"; SqlDataAdapter = "NpgsqlDataAdapter"; SqlCommand = "NpgsqlCommand"; }
 
             cls.AppendLine("using System;");
             cls.AppendLine("using System.Collections.Generic;");
