@@ -11,6 +11,8 @@ using System.Data.SQLite;
 using System.Xml.Linq;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Npgsql;
+using System.Windows;
 
 namespace ModelGen.Model
 {
@@ -42,9 +44,9 @@ namespace ModelGen.Model
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Handle exceptions
+                MessageBox.Show("Có lỗi xảy ra: " + ex);
             }
 
             return false;
@@ -77,9 +79,9 @@ namespace ModelGen.Model
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Handle exceptions
+                MessageBox.Show("Có lỗi xảy ra: " + ex);
             }
 
             return columns;
@@ -95,6 +97,8 @@ namespace ModelGen.Model
                     return new MySqlConnection(_connectionString);
                 case "SQLite":
                     return new SQLiteConnection(_connectionString);
+                case "PostgreSQL":
+                    return new NpgsqlConnection(_connectionString);
                 default:
                     throw new ArgumentException($"Loại cơ sở dữ liệu không được hỗ trợ {_databaseType}");
             }

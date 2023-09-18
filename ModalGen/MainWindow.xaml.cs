@@ -29,6 +29,7 @@ namespace ModalGen
         //sql server = Data Source=.\sqlexpress;Initial Catalog=QuanLyRaVaoCty;Integrated Security=True
         //mysql = Server=localhost;Database=quanlysinhvien;User=root;Password=123456;
         //sqlite = Data Source=D:\LeThanhAn\SQLite\QLCT;Version=3;
+        //postgresql = Host=localhost;Port=5432;Username=postgres;Password=123456;Database=school;
         public MainWindow()
         {
             InitializeComponent();
@@ -90,6 +91,10 @@ namespace ModalGen
                 case "SQLite":
                     SQLite sqlite = new SQLite();
                     sqlite.ShowDialog();
+                    break;
+                case "PostgreSQL":
+                    PostgreSQL postgreSQL = new PostgreSQL();
+                    postgreSQL.ShowDialog();
                     break;
                 default:
                     MessageBox.Show("Chưa hỗ trợ loại Sql này");

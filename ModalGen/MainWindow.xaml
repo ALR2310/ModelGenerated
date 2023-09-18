@@ -26,10 +26,6 @@
                 <ComboBoxItem Content="MySQL"/>
                 <ComboBoxItem Content="SQLite"/>
                 <ComboBoxItem Content="PostgreSQL"/>
-                <ComboBoxItem Content="Oracle Database"/>
-                <ComboBoxItem Content="IBM Db2"/>
-                <ComboBoxItem Content="MariaDB"/>
-                <ComboBoxItem Content="Sybase ASE"/>
             </ComboBox>
 
             <Grid Grid.Column="1">
