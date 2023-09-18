@@ -1,13 +1,13 @@
-Một phần mềm đơn giản giúp tạo ra các lớp Model đại diện cho các bảng và các trường trong cơ sở dữ liệu. tool rất có ích trong trường hợp cơ sở dữ liệu có quá nhiều bảng và bạn rất lười để tạo các model
+Một công cụ đơn giản giúp tạo nhanh ra các lớp model để tương tác với cơ sở dữ liệu cho các ứng dụng C# như asp.net, winform,wpf,..
+Cũng có thêm tuỳ chọn tạo lớp DAL trong mô hình 3 lớp để tương tác với database.
 
 Một số hình ảnh:
 
-![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/8355dfb2-9edd-43dd-952f-976f2ede05ae)
+![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/40ddc2ff-b130-45b5-a6ac-b4128fd1b490)
 
-![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/bdde5372-d0e1-4272-917a-c1e61654455c)
+![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/832ab711-766f-4ab3-a5c9-cf28ce833c45)
 
-![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/4e7c9c51-60b2-4ae9-9cb9-4a6c358cd2cd)
+![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/83c3cd6a-8885-49a1-a9df-d1024ab43987)
 
-![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/b61f3ec6-6354-4a90-8a79-87c461bee176)
-
+![image](https://github.com/AnLeRIP2310/ALRTooL2310/assets/87233160/dc03a93c-6c65-41ca-8751-8528c8ddeaa5)
 
